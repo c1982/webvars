@@ -32,7 +32,7 @@ func TestGetWebContent(t *testing.T) {
 }
 
 func TestGetWebContentNotWorkingWebSite(t *testing.T) {
-	content, h, scode, err := getWebVars("http://www.za123za123.com")
+	content, h, scode, err := getWebVars("http:/mocalhost")
 
 	if err == nil {
 		t.Error("Error object cannto be nil")
@@ -49,6 +49,6 @@ func TestGetWebContentNotWorkingWebSite(t *testing.T) {
 	}
 
 	if scode == http.StatusOK {
-		t.Errorf("Status code is %s", scode)
+		t.Errorf("Status code is ", scode)
 	}
 }

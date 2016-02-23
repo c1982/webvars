@@ -7,7 +7,7 @@ import (
 
 func getWebVars(url string) (content string, headers http.Header, statusCode int, err error) {
 
-	statusCode = http.StatusCreated
+	statusCode = 0
 
 	r, err := http.Get(url)
 
@@ -27,4 +27,22 @@ func getWebVars(url string) (content string, headers http.Header, statusCode int
 	headers = r.Header
 
 	return string(bt), headers, statusCode, err
+}
+
+//isLinux function is determines the server operating system.
+func isLinux(ipaddr string) bool {
+
+	//Check Server HTTP Header
+	//Check ICPM TTL
+
+	return true
+}
+
+//isWindows function is determines the server operating system.
+func isWindows(ipaddr string) bool {
+
+	//Check Server HTTP Header
+	//Check ICPM TTL
+
+	return true
 }
