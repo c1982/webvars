@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-//Webvars web sitesi değişkenlerini tutar.
+//Webvars web sitesi degiskenlerini tutar.
 type Webvars struct {
 	Name    string
 	IPAddr  string

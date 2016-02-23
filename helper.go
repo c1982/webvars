@@ -5,12 +5,14 @@ import (
 	"net/http"
 )
 
-func getWebVars(url string) (content string, headers http.Header, err error) {
+func getWebVars(url string) (content string, headers http.Header, statusCode int, err error) {
+
+	statusCode = http.StatusCreated
 
 	r, err := http.Get(url)
 
 	if err != nil {
-		return "", nil, err
+		return "", nil, statusCode, err
 	}
 
 	defer r.Body.Close()
@@ -18,10 +20,11 @@ func getWebVars(url string) (content string, headers http.Header, err error) {
 	bt, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		return "", nil, err
+		return "", nil, statusCode, err
 	}
 
+	statusCode = r.StatusCode
 	headers = r.Header
 
-	return string(bt), headers, err
+	return string(bt), headers, statusCode, err
 }
