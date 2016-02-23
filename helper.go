@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func GetWebVars(url string) (content string, headers http.Header, err error) {
+func getWebVars(url string) (content string, headers http.Header, err error) {
 
 	r, err := http.Get(url)
 
