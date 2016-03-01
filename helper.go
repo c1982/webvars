@@ -39,46 +39,46 @@ func getWebHeaders(url string) (headers http.Header, err error) {
 	return headers, err
 }
 
-//isLinux function is determines the server operating system.
-func isLinux(ipaddr string) (linux bool, err error) {
+//detectPorts check all ports on host
+func detectPorts(ipaddr string, ports ...int) bool {
+	var result <-chan bool
+	r := make(chan bool, len(ports))
 
-	linux := checkPort(ipaddr, 22)
-	if linux {
-		return linux
+	for _, port := range ports {
+		result := isPortOpen(ipaddr, port, r)
+		if <-result {
+			break
+		}
 	}
 
-	web := checkPort(ipaddr, 80)
-
-	if web {
-		name := getServerHeader(ipaddr)
-
-	}
-
-	return linux, err
-}
-
-//isWindows function is determines the server operating system.
-func isWindows(ipaddr string) (windows bool, err error) {
-	return windows, err
+	return <-result
 }
 
 //checkPort check port from host ip address
-func checkPort(ipaddr string, port int) bool {
+func isPortOpen(ipaddr string, port int, ch <-chan bool) <-chan bool {
 
-	fmt.Println(fmt.Sprintf("%s:%d", ipaddr, port))
-	connection, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ipaddr, port), time.Duration(3)*time.Second)
+	result := make(chan bool)
 
-	if err != nil {
-		return false
-	}
+	go func() {
+		result <- true
 
-	defer connection.Close()
+		fmt.Println(fmt.Sprintf("%s:%d", ipaddr, port))
+		connection, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ipaddr, port), time.Duration(3)*time.Second)
 
-	return true
+		if err != nil {
+			result <- false
+		} else {
+			connection.Close()
+		}
+
+		close(result)
+	}()
+
+	return result
 }
 
 //getServerHeader just retrieve server header on web
-func getServerHeader(ipaddr string) string {
+func getHeader(ipaddr string, headerKey string) string {
 	serverHeader := ""
 	hostUrl := fmt.Sprintf("http://%s", ipaddr)
 
@@ -86,7 +86,7 @@ func getServerHeader(ipaddr string) string {
 
 	if err == nil {
 		if len(headers) > 0 {
-			serverHeader = headers.Get("Server")
+			serverHeader = headers.Get(headerKey)
 		}
 	}
 
