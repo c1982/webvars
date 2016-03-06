@@ -40,41 +40,40 @@ func getWebHeaders(url string) (headers http.Header, err error) {
 }
 
 //detectPorts check all ports on host
-func detectPorts(ipaddr string, ports ...int) bool {
-	var result <-chan bool
-	r := make(chan bool, len(ports))
+func detectPorts(ipaddr string, ports ...int) (result bool) {
+	result = false
+	c := make(chan bool)
 
 	for _, port := range ports {
-		result := isPortOpen(ipaddr, port, r)
-		if <-result {
+		go isPortOpen(c, ipaddr, port)
+	}
+
+	for _, _ = range ports {
+		result = <-c
+		if result {
 			break
 		}
 	}
 
-	return <-result
+	return result
 }
 
 //checkPort check port from host ip address
-func isPortOpen(ipaddr string, port int, ch <-chan bool) <-chan bool {
+func isPortOpen(c chan bool, ipaddr string, port int) {
 
-	result := make(chan bool)
+	result := false
 
-	go func() {
-		result <- true
+	connection, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ipaddr, port), time.Duration(2)*time.Second)
 
-		fmt.Println(fmt.Sprintf("%s:%d", ipaddr, port))
-		connection, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ipaddr, port), time.Duration(3)*time.Second)
+	if err == nil {
+		result = true
+	}
 
-		if err != nil {
-			result <- false
-		} else {
-			connection.Close()
-		}
+	if connection != nil {
+		connection.Close()
+	}
 
-		close(result)
-	}()
-
-	return result
+	c <- result
 }
 
 //getServerHeader just retrieve server header on web
@@ -82,6 +81,7 @@ func getHeader(ipaddr string, headerKey string) string {
 	serverHeader := ""
 	hostUrl := fmt.Sprintf("http://%s", ipaddr)
 
+	fmt.Println(hostUrl)
 	headers, err := getWebHeaders(hostUrl)
 
 	if err == nil {
