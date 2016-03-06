@@ -81,7 +81,6 @@ func getHeader(ipaddr string, headerKey string) string {
 	serverHeader := ""
 	hostUrl := fmt.Sprintf("http://%s", ipaddr)
 
-	fmt.Println(hostUrl)
 	headers, err := getWebHeaders(hostUrl)
 
 	if err == nil {
