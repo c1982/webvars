@@ -5,7 +5,7 @@ import (
 )
 
 func TestWebVars(t *testing.T) {
-	w, err := GetServerVariables("178.18.196.250")
+	w, err := GetServerVariables("5.2.82.207")
 
 	if err != nil {
 		t.Error(err)
@@ -16,6 +16,9 @@ func TestWebVars(t *testing.T) {
 	} else {
 		t.Error("OS cannot be determine")
 	}
+
+	t.Log(w.PoweredBy)
+	t.Log(w.WebServer)
 }
 
 //func TestDetectPort(t *testing.T) {

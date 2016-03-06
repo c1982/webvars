@@ -13,7 +13,7 @@ func getWebVars(url string) (content string, headers http.Header, statusCode int
 
 	statusCode = 0
 
-	r, err := http.Get(url)
+	r, err := http.Head(url)
 
 	if err != nil {
 		return "", nil, statusCode, err
